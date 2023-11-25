@@ -23,23 +23,24 @@ ballMovement(){
 	if(ball.yPos >= 0 || ball.yPos <= -31){
 		ball.dy = -(ball.dy);
 	}
-
 }
+
+
+
+
 
 game(){
 	gameInit();
 	int count;
 	while(1){
-		coordToBuffer(ball.xPos, ball.yPos);
+		
 		ballMovement();
+		coordToBuffer(ball.xPos, ball.yPos);
+		display_image(0, FrameBuffer);
+		flush_display();
+		count = 0;
 
-		if(count >= 5){
-			//display_update();
-			display_image(0, FrameBuffer);
-			flush_display();
-			count = 0;
-		}
-		delay(100010);
+		delay(10001);
 		count++;
 	}
 

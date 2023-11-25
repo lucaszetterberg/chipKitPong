@@ -237,6 +237,7 @@ void display_image(int x, uint8_t *data) {
 	}
 }
 
+/*
 void flush_display(){
 	int i, j;
 
@@ -252,10 +253,30 @@ void flush_display(){
 
 	for(j = 0; j < 128; j++)
 		FrameBuffer[i*128 + j] = EmptyBuffer[i*128 + j];
+		spi_send_recv(FrameBuffer[i*128 + j]);
 	}
-	spi_send_recv(FrameBuffer);
 }
+*/
+void flush_display() {
+    int i, j;
 
+    for (i = 0; i < 4; i++) {
+        DISPLAY_COMMAND_DATA_PORT &= ~DISPLAY_COMMAND_DATA_MASK;
+        spi_send_recv(0x22);
+        spi_send_recv(i);
+
+        spi_send_recv(0x00);
+        spi_send_recv(0x10);
+
+        DISPLAY_COMMAND_DATA_PORT |= DISPLAY_COMMAND_DATA_MASK;
+
+        for (j = 0; j < 128; j++)
+            FrameBuffer[i * 128 + j] = EmptyBuffer[i * 128 + j];
+
+        for (j = 0; j < 128; j++)
+            spi_send_recv(FrameBuffer[i * 128 + j]);
+    }
+}
 
 void display_update() {
 	int i, j, k;
