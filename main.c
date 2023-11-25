@@ -4,6 +4,7 @@
 #include "displayControl.h"
 #include "gameAssets.h"
 #include <string.h>
+
 Ball ball;
 
 int Array[9][2] = {
@@ -23,7 +24,7 @@ void gameInit(){
 	ball.yPos = -8;
 	ball.dx = 1;
 	ball.dy = -1;
-	ball.image = Array;
+	memcpy_custom(ball.image, Array, sizeof(Array));
 
 }
 
@@ -31,17 +32,13 @@ void ballMovement(){
 	ball.xPos = (ball.xPos + ball.dx);
 	ball.yPos = (ball.yPos + ball.dy);
 
-	if(ball.xPos >= 127 || ball.xPos <= 0){
+	if(ball.xPos >= 124 || ball.xPos <= 0){
 		ball.dx = -(ball.dx);
 	}
-	if(ball.yPos >= 0 || ball.yPos <= -31){
+	if(ball.yPos >= 0 || ball.yPos <= -28){
 		ball.dy = -(ball.dy);
 	}
 }
-
-
-
-
 
 void game(){
 	gameInit();
