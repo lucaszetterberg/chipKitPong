@@ -3,17 +3,31 @@
 #include <stdlib.h>
 #include "displayControl.h"
 #include "gameAssets.h"
-
+#include <string.h>
 Ball ball;
 
-gameInit(){
+int Array[9][2] = {
+        {0,0}, 
+        {1,0}, 
+        {2,0}, 
+        {0,-1}, 
+        {1,-1}, 
+        {2,-1}, 
+        {0,-2},
+        {1,-2},
+        {2,-1}};
+
+
+void gameInit(){
 	ball.xPos = 10;
 	ball.yPos = -8;
 	ball.dx = 1;
 	ball.dy = -1;
+	ball.image = Array;
+
 }
 
-ballMovement(){
+void ballMovement(){
 	ball.xPos = (ball.xPos + ball.dx);
 	ball.yPos = (ball.yPos + ball.dy);
 
@@ -29,13 +43,14 @@ ballMovement(){
 
 
 
-game(){
+void game(){
 	gameInit();
 	int count;
 	while(1){
-		
+
 		ballMovement();
 		coordToBuffer(ball.xPos, ball.yPos);
+		draw_ball(&ball);
 		display_image(0, FrameBuffer);
 		flush_display();
 		count = 0;
