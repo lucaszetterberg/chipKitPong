@@ -6,6 +6,9 @@
 #include <string.h>
 
 Ball ball;
+Paddle leftPaddle;
+Paddle rightPaddle;
+
 
 int Array[9][2] = {
         {0,0}, 
@@ -25,6 +28,16 @@ void gameInit(){
 	ball.dx = 1;
 	ball.dy = -1;
 	memcpy_custom(ball.image, Array, sizeof(Array));
+	leftPaddle.xPos = 2;
+    leftPaddle.yPos = -6;
+    leftPaddle.width = 1;
+    leftPaddle.height = 5;
+    leftPaddle.image[0][0] = 0; leftPaddle.image[0][1] = 0;
+    leftPaddle.image[1][0] = 0; leftPaddle.image[1][1] = -1;
+    leftPaddle.image[2][0] = 0; leftPaddle.image[2][1] = -2;
+    leftPaddle.image[3][0] = 0; leftPaddle.image[3][1] = -3;
+    leftPaddle.image[4][0] = 0; leftPaddle.image[4][1] = -4;
+
 
 }
 
@@ -38,6 +51,12 @@ void ballMovement(){
 	if(ball.yPos >= 0 || ball.yPos <= -28){
 		ball.dy = -(ball.dy);
 	}
+
+	if (ball.xPos == leftPaddle.xPos + leftPaddle.width &&
+    ball.yPos >= leftPaddle.yPos && ball.yPos < leftPaddle.yPos + leftPaddle.height) {
+    ball.dx = -ball.dx;
+	
+    }
 }
 
 void game(){
