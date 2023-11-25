@@ -2,6 +2,48 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "displayControl.h"
+#include "gameAssets.h"
+
+Ball ball;
+
+gameInit(){
+	ball.xPos = 10;
+	ball.yPos = -8;
+	ball.dx = 1;
+	ball.dy = -1;
+}
+
+ballMovement(){
+	ball.xPos = (ball.xPos + ball.dx);
+	ball.yPos = (ball.yPos + ball.dy);
+
+	if(ball.xPos >= 127 || ball.xPos <= 0){
+		ball.dx = -(ball.dx);
+	}
+	if(ball.yPos >= 0 || ball.yPos <= -31){
+		ball.dy = -(ball.dy);
+	}
+
+}
+
+game(){
+	gameInit();
+	int count;
+	while(1){
+		coordToBuffer(ball.xPos, ball.yPos);
+		ballMovement();
+
+		if(count >= 5){
+			//display_update();
+			display_image(0, FrameBuffer);
+			flush_display();
+			count = 0;
+		}
+		delay(100010);
+		count++;
+	}
+
+}
 
 int main(void) {
 	/* Set up peripheral bus clock */
@@ -46,14 +88,8 @@ int main(void) {
 	display_string(3, "wow");
 	display_update();
 	*/
-	int i;
-	for (i = 0; i > -8; i--)
-	{
-		coordToBuffer(5, i);
-	}
-	
-	display_update();
-	display_image(0, FrameBuffer);
+	game();
+	//coordToBuffer(1, -9);
 	for(;;) ;
 	return 0;
 }

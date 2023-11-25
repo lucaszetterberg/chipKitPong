@@ -26,6 +26,7 @@ typedef unsigned char BYTE;
 #define pageOledMax 4
 
 uint8_t FrameBuffer[OledDispMax];
+uint8_t EmptyBuffer[OledDispMax];
 
 char textbuffer[4][16];
 
@@ -226,8 +227,8 @@ void display_image(int x, uint8_t *data) {
 		spi_send_recv(0x22);
 		spi_send_recv(i);
 		
-		spi_send_recv(x & 0xF);
-		spi_send_recv(0x10 | ((x >> 4) & 0xF));
+		spi_send_recv(0x00);
+		spi_send_recv(0x10);
 
 		DISPLAY_COMMAND_DATA_PORT |= DISPLAY_COMMAND_DATA_MASK;
 		
@@ -235,6 +236,26 @@ void display_image(int x, uint8_t *data) {
 			spi_send_recv(data[i*128 + j]);
 	}
 }
+
+void flush_display(){
+	int i, j;
+
+	for(i = 0; i < 4; i++) {
+	DISPLAY_COMMAND_DATA_PORT &= ~DISPLAY_COMMAND_DATA_MASK;
+	spi_send_recv(0x22);
+	spi_send_recv(i);
+
+	spi_send_recv(0x00);
+	spi_send_recv(0x10);
+
+	DISPLAY_COMMAND_DATA_PORT |= DISPLAY_COMMAND_DATA_MASK;
+
+	for(j = 0; j < 128; j++)
+		FrameBuffer[i*128 + j] = EmptyBuffer[i*128 + j];
+	}
+	spi_send_recv(FrameBuffer);
+}
+
 
 void display_update() {
 	int i, j, k;
