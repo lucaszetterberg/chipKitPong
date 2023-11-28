@@ -2,32 +2,23 @@
 #include <pic32mx.h>
 
 int input(int btns){
-    if(btns){
-        switch (btns){
-        case 4:    //BTN4 is pressed
-        return 4;
-        break;
-        case 2:   //BTN3 is pressed
-        return 3;
-        break;
-        case 1:   //BTN2 is pressed
-        return 2;
-        break;
-        /*
-        case 6:   //BTN 4 and 3 are pressed
-        mytime = (sw << 8) | (sw << 12) | (mytime & 0x00ff);
-        break;
-        case 5:    //BTN 4 and 2 are pressed
-        mytime = (sw << 4) | (sw << 12) | (mytime & 0x0f0f);
-        break;
-        case 3:    //BTN 3 and 2 are pressed
-        mytime = (sw << 4) | (sw << 8) | (mytime & 0xf00f);
-        break;
-        case 7:
-        mytime = (sw << 4) | (sw << 8) | (sw << 12) | (mytime & 0x000f);
-        break;
-        */
-        }
-        btns = 0;
+    if(btns & 0x8){ // BTN1 pressed
+        return 1;
     }
+
+    if(btns & 0x1){ // BTN2 pressed
+        return 2;
+    }
+
+    if(btns & 0x2){ // BTN3 pressed
+        return 3;
+    }
+
+    if(btns & 0x4){ // BTN4 pressed
+        return 4;
+    }
+    btns = 0;
+}
+
+int inputsw(int sw){
 }

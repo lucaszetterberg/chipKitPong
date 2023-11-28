@@ -6,6 +6,7 @@ int getsw( void ){
 }
 
 int getbtns(void){
-    int returnsBtns = (PORTD >> 5) & 0x7;
+    int returnsBtns = ((PORTD >> 5) & 0x7) | ((PORTF << 2) & 0x8);
+
     return returnsBtns;
 }

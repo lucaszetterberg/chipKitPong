@@ -51,8 +51,7 @@ void timerInit(){
 
   	TRISD = (TRISD & 0xf07f) | 0x0f80;
 
-	//TRISFSET = 
-
+	TRISFSET = 0x2;
 
 	T2CON = 0x0070; // Makes bits 6-4 (TCKPS bits) to 1 (111) to scale the internal clock down by 256. See PIC32 family sheet page 56.
 	IFS(0) = (IFS(0) & 0xfffffeff); //Turns bit of interrupt flag to 0. It is bit 8 see PIC32 family sheet page 53. 
@@ -94,10 +93,14 @@ void mainMenu(btns){
 			clear_textbuffer();
 			GAME_STATE = GAME_STATE_ONE_PLAYER;
 			break;
-		
 		default:
 			break;
 		}
+	case 1: 
+		x += 1;
+		delay(900000);
+		break;
+
 	default:
 		break;
 	}
@@ -115,7 +118,7 @@ void highscoreMenu(){
 void gameInit(){
 	// Initializing ball
 	ball.xPos = 10;
-	ball.yPos = -16;
+	ball.yPos = -14;
 	ball.dx = 0.5;
 	ball.dy = -0.5;
 	memcpy_custom(ball.image, Array, sizeof(Array));
@@ -126,6 +129,12 @@ void gameInit(){
     leftPaddle.width = 1;
     leftPaddle.height = 5;
 	memcpy_custom(leftPaddle.image, Image, sizeof(Image));
+
+	rightPaddle.xPos = 100;
+    rightPaddle.yPos = -10;
+    rightPaddle.width = 1;
+    rightPaddle.height = 5;
+	memcpy_custom(rightPaddle.image, Image, sizeof(Image));
 
 	// Initializing players
 	player1.score = 0;
@@ -149,10 +158,15 @@ void ballMovement() {
     float ballTop = ball.yPos;
     float ballBottom = ball.yPos - 3;
 
-    float paddleLeft = leftPaddle.xPos;
+    //float paddleLeft = leftPaddle.xPos;
     float paddleRight = leftPaddle.xPos + leftPaddle.width;
     float paddleTop = leftPaddle.yPos;
-    float paddleBottom = leftPaddle.yPos + leftPaddle.height;
+    float paddleBottom = leftPaddle.yPos - leftPaddle.height;
+
+	float rightPaddleLeft = rightPaddle.xPos;
+    float rightPaddleRight = rightPaddle.xPos + rightPaddle.width;
+    float rightPaddleTop = rightPaddle.yPos;
+    float rightPaddleBottom = rightPaddle.yPos - rightPaddle.height;
 
     if (ballLeft <= 0 || ballRight >= 124) {
         ball.dx = -ball.dx;
@@ -162,17 +176,17 @@ void ballMovement() {
         ball.dy = -ball.dy;
     }
 
-    if ((ballRight >= paddleLeft && ballBottom >= paddleTop && ballTop <= paddleBottom && ball.dx > 0) || (ballLeft <= paddleRight && ballBottom >= paddleTop && ballTop <= paddleBottom && ball.dx < 0))
+	if ((ballRight >= rightPaddleLeft && ballBottom <= rightPaddleTop && ballTop >= rightPaddleBottom && ball.dx > 0)) // Checks right paddle
+    {
+        ball.dx = -ball.dx;
+	}
+
+	if ((ballLeft <= paddleRight && ballBottom <= paddleTop && ballTop >= paddleBottom && ball.dx < 0)) // Checks left paddle))
 	{
 		ball.dx = -ball.dx;
-		/*
-        if(ballBottom >= paddleTop || ballTop <= paddleBottom){
-
-		}
-		*/
-    }
-
+	}
 }
+
 /*
 void ballMovement(){
 	ball.xPos = (ball.xPos + ball.dx);
@@ -221,6 +235,7 @@ void game(btns, sw, GAME_STATE, AI_DIFFICULTY){
 	ballMovement();
 	draw_ball(&ball);
 	draw_paddle(&leftPaddle);
+	draw_paddle(&rightPaddle);
 	display_image(FrameBuffer);
 }
 
