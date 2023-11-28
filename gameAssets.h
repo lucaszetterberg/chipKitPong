@@ -1,15 +1,17 @@
 #include <stdint.h>
 #include <pic32mx.h>
+#include <stdint.h>
+#include <pic32mx.h>
+
 
 typedef struct
 {
-    int xPos;
-    int yPos;
-    int size;
-    int dx;
-    int dy;
-    int speed;
-
+    float xPos;
+    float yPos;
+    float size;
+    float dx;
+    float dy;
+    float speed;
     int image[9][2];  // Declare the array size here
 
 } Ball;
@@ -37,5 +39,21 @@ typedef struct {
     int yPos;
     int width;
     int height;
-    int imagePaddle[5][2];
+    int image[5][2];
 } Paddle;
+
+void draw_paddle(Paddle *paddle) {
+    int i;
+    for (i = 0; i < 5; i++) {
+        coordToBuffer(paddle->image[i][0] + paddle->xPos, paddle->image[i][1] + paddle->yPos);
+    }
+}
+
+
+typedef struct {
+    int score;
+} Player;
+
+void score(Player *player){
+    player->score += 1;
+}
