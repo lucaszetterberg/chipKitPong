@@ -23,33 +23,32 @@ int AI_DIFFICULTY;
 int btns_temp;
 int btns;
 int sw;
+int sw_temp;
 int x = 0;
 
 
 int Array[9][2] = {
-        {0,0}, 
-        {1,0}, 
-        {2,0}, 
-        {0,-1}, 
-        {1,-1}, 
-        {2,-1}, 
-        {0,-2},
-        {1,-2},
-        {2,-2}};
+	{0,0 }, {1,0 }, {2,0 }, 
+	{0,-1}, {1,-1}, {2,-1}, 
+	{0,-2}, {1,-2}, {2,-2}
+};
+
 
 int Image[5][2] = {
-		{0,0},
-		{0,-1},
-		{0,-2},
-		{0,-3},
-		{0,-4}	
+	{0,0},
+	{0,-1},
+	{0,-2},
+	{0,-3},
+	{0,-4}	
 };
 
 void timerInit(){
 	volatile unsigned *trise = (volatile int*) 0xbf886100;
   	*trise &= ~0xff;
 
-  	TRISD = (TRISD & 0xf07f) | 0x0f80;
+  	//TRISD = (TRISD & 0xf07f) | 0x0f80;
+
+	TRISDSET = 0x0f00;
 
 	TRISFSET = 0x2;
 
@@ -69,13 +68,16 @@ void menuInit(){
 
 void mainMenu(btns){
 	//flush_display();
-	display_string(1, "Single player");
+	clear_textbuffer();
+	display_string(1, "Single player ");
 	display_string(2, "Two Player");
 	display_string(3, "Highscore");
 	display_update(1, x);
 
 
 	int mode = input(btns);
+	int sw4 = inputsw(sw);
+
 	switch (mode)
 	{
 	case 4:
@@ -93,14 +95,18 @@ void mainMenu(btns){
 			clear_textbuffer();
 			GAME_STATE = GAME_STATE_ONE_PLAYER;
 			break;
+		case 2:
+			clear_textbuffer();
+			display_string(1, "Game starts!");
+			display_update(0, x);
+			delay(10000000);
+			clear_textbuffer();
+			GAME_STATE = GAME_STATE_TWO_PLAYER;
+			break;
+
 		default:
 			break;
 		}
-	case 1: 
-		x += 1;
-		delay(900000);
-		break;
-
 	default:
 		break;
 	}
@@ -108,17 +114,13 @@ void mainMenu(btns){
 }
 
 void highscoreMenu(){
-	display_string(1, "Single player");
-	display_string(2, "Two Player");
-	display_string(3, "Highscore");
-	display_update(1, x);
+	
 }
 
-		
 void gameInit(){
 	// Initializing ball
-	ball.xPos = 10;
-	ball.yPos = -14;
+	ball.xPos = 63;
+	ball.yPos = -15;
 	ball.dx = 0.5;
 	ball.dy = -0.5;
 	memcpy_custom(ball.image, Array, sizeof(Array));
@@ -164,7 +166,7 @@ void ballMovement() {
     float paddleBottom = leftPaddle.yPos - leftPaddle.height;
 
 	float rightPaddleLeft = rightPaddle.xPos;
-    float rightPaddleRight = rightPaddle.xPos + rightPaddle.width;
+    //float rightPaddleRight = rightPaddle.xPos + rightPaddle.width;
     float rightPaddleTop = rightPaddle.yPos;
     float rightPaddleBottom = rightPaddle.yPos - rightPaddle.height;
 
@@ -176,69 +178,91 @@ void ballMovement() {
         ball.dy = -ball.dy;
     }
 
-	if ((ballRight >= rightPaddleLeft && ballBottom <= rightPaddleTop && ballTop >= rightPaddleBottom && ball.dx > 0)) // Checks right paddle
-    {
+	if ((ballRight >= rightPaddleLeft && ballBottom <= rightPaddleTop && ballTop >= rightPaddleBottom && ball.dx > 0)){ // Checks right paddle
         ball.dx = -ball.dx;
 	}
 
-	if ((ballLeft <= paddleRight && ballBottom <= paddleTop && ballTop >= paddleBottom && ball.dx < 0)) // Checks left paddle))
-	{
+	if ((ballLeft <= paddleRight && ballBottom <= paddleTop && ballTop >= paddleBottom && ball.dx < 0)){ // Checks left paddle
 		ball.dx = -ball.dx;
 	}
 }
 
-/*
-void ballMovement(){
-	ball.xPos = (ball.xPos + ball.dx);
-	ball.yPos = (ball.yPos + ball.dy);
-
-	if(ball.xPos >= 124 || ball.xPos <= 0){
-		ball.dx = -(ball.dx);
-		if(ball.xPos >= 124){	// Player 2 (right side)
-			score(&player2);
-		}else{
-			score(&player1);
-		}
-	}
-
-	if(ball.yPos >= 0 || ball.yPos <= -28){
-		ball.dy = -(ball.dy);
-	}
-
-	if (ball.xPos + 1 >= leftPaddle.xPos &&
-        ball.xPos <= leftPaddle.xPos + leftPaddle.width &&
-        ball.yPos >= leftPaddle.yPos &&
-        ball.yPos < leftPaddle.yPos + leftPaddle.height) {
-        ball.dx = -ball.dx;
-    }
-}
-*/
-
-
 int count;
 
-void game(btns, sw, GAME_STATE, AI_DIFFICULTY){
-	/*
-	clear_textbuffer();
-	num32asc(&textbuffer[0][6], player1.score);
-	textbuffer[0][7] = 0x3A;
-	num32asc(&textbuffer[0][8], player2.score);
-	*/	
+void game(AI_DIFFICULTY){
+    clear_textbuffer();
+    num32asc(&textbuffer[0][6], player1.score);
+    textbuffer[0][7] = 0x3A;
+    num32asc(&textbuffer[0][8], player2.score);
 
-
-	if(sw & 0x8){
-		GAME_STATE = GAME_STATE_MENU;
+	int i;
+	for(i = 9; i < 16; i++){
+		textbuffer[0][i] = 0x00;
 	}
+    
+    if(inputsw(sw) == 4){
+		flush_display();
+        GAME_STATE = GAME_STATE_MENU;
+    }
 
-	flush_display();
-	//display_update(0, x);
-	ballMovement();
-	draw_ball(&ball);
-	draw_paddle(&leftPaddle);
-	draw_paddle(&rightPaddle);
-	display_image(FrameBuffer);
+    clear_FrameBuffer();  
+    ballMovement();
+    draw_ball(&ball);
+    draw_paddle(&leftPaddle);
+    draw_paddle(&rightPaddle);
+    display_image(FrameBuffer);
+	//display_update(0, x); 
+
+	if (GAME_STATE == GAME_STATE_ONE_PLAYER){
+        switch(input(btns)){
+			case 3: {
+				if(!(leftPaddle.yPos == -26)){
+					leftPaddle.yPos--;
+				}
+				break;
+			}
+			case 4: {
+				if(!(leftPaddle.yPos == 0)){
+					leftPaddle.yPos++;
+				}
+				break;
+			}
+    	}
+    }
+
+
+    if (GAME_STATE == GAME_STATE_TWO_PLAYER){
+        switch(input(btns)){
+
+        case 4: {
+            if(!(leftPaddle.yPos == 0)){
+                leftPaddle.yPos++;
+                break;
+            }
+        }
+
+        case 3: {
+            if(!(leftPaddle.yPos == -26))
+            leftPaddle.yPos--;
+            break;
+        }
+
+        case 2: {
+            if(!(rightPaddle.yPos == 0)){
+                rightPaddle.yPos++;
+                break;
+            }
+        }
+
+        case 1: {
+            if(!(rightPaddle.yPos == -26)){
+                rightPaddle.yPos--;
+                break;
+                }
+            }
+        }
+    }
 }
-
 int main(void) {
 	spi_init();
 	display_init();
@@ -252,20 +276,21 @@ int main(void) {
 		btns_temp = getbtns();
 		sw = getsw();
 
+		if(sw_temp > 0){
+			sw = sw_temp;
+		}
+
 		if(btns_temp > 0){
 			btns = btns_temp;
 		}
 
-
-
-		if(IFS(0) & 0x100){ //If interrupt flag bit (bit 8) is 1, execute following code. 
+		if(IFS(0) & 0x100){ 				//If interrupt flag bit (bit 8) is 1, execute following code. 
 			IFS(0) = (IFS(0) & 0xfffffeff); // Resets interrupt flag in each iteration
-			T2CON = 0x0070; // Stops timer
-			TMR2 = 0; // Resets timer to 0
+			T2CON = 0x0070; 				// Stops timer
+			TMR2 = 0; 						// Resets timer to 0
 			
-
 			if(count == 16){
-				flush_display();
+				//flush_display();
 				count = 0;
 			}
 
@@ -281,16 +306,19 @@ int main(void) {
 				mainMenu(btns);
 				break;
 			case GAME_STATE_ONE_PLAYER:
-				game(btns, sw, GAME_STATE, AI_DIFFICULTY);
+				game(AI_DIFFICULTY);
+				break;
+			case GAME_STATE_TWO_PLAYER:
+				game(AI_DIFFICULTY);
 				break;
 			default:
 				break;
 			}
-
+			sw = 0;
+			btns = 0;
 			T2CON = 0x8070; // Starts timer
 		}
-
-		btns = 0;
+		
 	}
 	return 0;
 }
