@@ -14,6 +14,7 @@
 #define AI_MEDIUM 2
 #define AI_HARD 3
 
+
 Ball ball;
 Paddle leftPaddle;
 Paddle rightPaddle;
