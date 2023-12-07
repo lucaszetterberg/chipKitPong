@@ -1,7 +1,5 @@
 #include <pic32mx.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>   
 #include "data.h"
 
 typedef unsigned char BYTE;
@@ -51,7 +49,7 @@ uint8_t spi_send_recv(uint8_t data) {
 }
 
 void spi_init() {
-		/* Set up peripheral bus clock */
+	/* Set up peripheral bus clock */
 	OSCCON &= ~0x180000;
 	OSCCON |= 0x080000;
 	
@@ -162,7 +160,6 @@ void flush_display() {
         spi_send_recv(0x10);
 
         DISPLAY_COMMAND_DATA_PORT |= DISPLAY_COMMAND_DATA_MASK;
-
         for (j = 0; j < 128; j++)
             FrameBuffer[i * 128 + j] = 0x00;
 
@@ -171,6 +168,14 @@ void flush_display() {
     }
 }
 
+void clear_FrameBuffer(){
+	int i, j;
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 128; j++)
+            FrameBuffer[i * 128 + j] = 0x00;
+    }
+}
 
 void display_update(int on, int x) {
 	int i, j, k;
