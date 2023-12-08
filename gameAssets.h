@@ -1,57 +1,46 @@
+#ifndef _Game_Assets
+#define _Game_Assets
+#include "gameStructs.h"
+#include "displayControl.h"
+#include "helpers.h"
+
 #include <stdint.h>
+#include <stdlib.h>
 #include <pic32mx.h>
 
-typedef struct
-{
-    float xPos;
-    float yPos;
-    int size;
-    float dx;
-    float dy;
-    float speed;
-    int image[4][2];  // Declare the array size here
+#define GAME_STATE_MENU 0
+#define GAME_STATE_ONE_PLAYER 1
+#define GAME_STATE_TWO_PLAYER 2
+#define GAME_STATE_HIGHSCORE 3
+#define GAME_STATE_INSERT_HIGHSCORE 4
+#define GAME_STATE_AI_MENU 5
 
-} Ball;
+#define AI_EASY 1
+#define AI_MEDIUM 2
+#define AI_HARD 3
 
-void draw_ball(Ball *ball) {
-    int i;
-    for (i = 0; i < 4; i++) {
-        coordToBuffer(ball->image[i][0] + ball->xPos, ball->image[i][1] + ball->yPos);
-    }
-}
+int GAME_STATE;
+int AI_DIFFICULTY;
+int btns;
+int sw;
+int x;
+int letter;
+int letterIndex;
+char HighScores [10][5];
+int HighScoreIndex;
+int playerScore;
+int HighScoreListIndex;
 
-void* memcpy_custom(void *dest, const void *src, size_t n) {
-    char *d = dest;
-    const char *s = src;
+void game(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle);
+void highscoreMenu();
+void mainMenu();
+void draw_ball(Ball *ball);
+void* memcpy_custom(void *dest, const void *src, size_t n);
+void draw_paddle(Paddle *paddle);
+void score(Player *player);
+void aiMenu();
 
-    while (n--) {
-        *d++ = *s++;
-    }
+int Array[4][2];
+int Image[7][2];
 
-    return dest;
-}
-
-typedef struct {
-    int xPos;
-    int yPos;
-    int width;
-    int height;
-    int image[7][2];
-} Paddle;
-
-void draw_paddle(Paddle *paddle) {
-    int i;
-    for (i = 0; i < 7; i++) {
-        coordToBuffer(paddle->image[i][0] + paddle->xPos, paddle->image[i][1] + paddle->yPos);
-    }
-}
-
-
-typedef struct {
-    int score;
-} Player;
-
-
-void score(Player *player){
-    player->score += 1;
-}
+#endif
