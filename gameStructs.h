@@ -27,5 +27,4 @@ typedef struct {
 typedef struct {
     int score;
 } Player;
-
 #endif

@@ -32,3 +32,33 @@ void draw_paddle(Paddle *paddle) {
 void score(Player *player){
     player->score += 1;
 }
+
+void reflectBall(Ball *ball, Paddle  *paddle) {
+    // Calculate the center of the paddle
+    float paddleCenter = (paddle->yPos - paddle->height / 2.0 + paddle->yPos) / 2.0;
+
+    // Calculate the relative position of the ball to the center of the paddle
+    float relativePos = ball->yPos - paddleCenter;
+
+    // Calculate the normalized reflection angle based on the relative position
+    float normalizedAngle = relativePos / (paddle->height / 2.0);
+
+    // Manually clamp the normalized angle to the range [-0.75, 0.75]
+    if (normalizedAngle > 0.75) {
+        normalizedAngle = 0.75;
+    } else if (normalizedAngle < -0.75) {
+        normalizedAngle = -0.75;
+    }
+
+    // Set the new direction of the ball
+    ball->dx = -ball->dx;  // Invert the x-direction for reflection
+
+    // Check if the ball hits the top or bottom part of the paddle
+    if (ball->yPos > paddle->yPos && ball->yPos < (paddle->yPos - paddle->height)) {
+        // Hit the bottom part of the paddle
+        ball->dy = -(ball->dy + normalizedAngle); // Use the normalized angle for the y-direction
+    } else {
+        // Hit the top part of the paddle
+        ball->dy = ball->dy + normalizedAngle;  // Use the normalized angle for the y-direction
+    }
+}

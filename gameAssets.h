@@ -14,6 +14,7 @@
 #define GAME_STATE_HIGHSCORE 3
 #define GAME_STATE_INSERT_HIGHSCORE 4
 #define GAME_STATE_AI_MENU 5
+#define GAME_STATE_SURVIVAL 6
 
 #define AI_EASY 1
 #define AI_MEDIUM 2
@@ -26,12 +27,13 @@ int sw;
 int x;
 int letter;
 int letterIndex;
-char HighScores [10][5];
+char HighScores [8][7];
 int HighScoreIndex;
 int playerScore;
 int HighScoreListIndex;
+static uint32_t xorshift_seed;
 
-void game(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle);
+void game(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle, Player *player1, Player *player2);
 void highscoreMenu();
 void mainMenu();
 void draw_ball(Ball *ball);
@@ -39,6 +41,13 @@ void* memcpy_custom(void *dest, const void *src, size_t n);
 void draw_paddle(Paddle *paddle);
 void score(Player *player);
 void aiMenu();
+void timersInit();
+void reflectBall(Ball *ball, Paddle  *paddle);
+void ai(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle);
+void score_detection(Ball *ball, Player *player1, Player *player2);
+void winner(Player *player1, Player *player2);
+
+
 
 int Array[4][2];
 int Image[7][2];
