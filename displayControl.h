@@ -4,6 +4,7 @@
 #include <pic32mx.h>
 #include <stdint.h>
 
+// All of these declarations taken from labs
 #define DISPLAY_VDD PORTFbits.RF6
 #define DISPLAY_VBATT PORTFbits.RF5
 #define DISPLAY_COMMAND_DATA PORTFbits.RF4
@@ -18,6 +19,7 @@
 #define DISPLAY_COMMAND_DATA_MASK 0x10
 #define DISPLAY_RESET_PORT PORTG
 #define DISPLAY_RESET_MASK 0x200
+// Until here
 
 #define OledDispMax 512	// Max number of bytes able to be stored 
 #define colOledMax 128

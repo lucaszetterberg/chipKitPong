@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "displayControl.h"
 
+// This function was taken from labs
 void delay(int cyc) {
 	int i;
 	for(i = cyc; i > 0; i--);
@@ -16,6 +17,7 @@ void clear_textbuffer(){
 	}
 }
 
+// This function was taken from labs
 uint8_t spi_send_recv(uint8_t data) {
 	while(!(SPI2STAT & 0x08)); // Waits until the buffer is empty
 	SPI2BUF = data; // When it is, it fills the buffer with 'data'
@@ -23,6 +25,7 @@ uint8_t spi_send_recv(uint8_t data) {
 	return SPI2BUF; // Then returns the data in when it is full
 }
 
+// This function was made with primarily code taken from labs
 void spi_init() {
 	/* Set up peripheral bus clock */
 	OSCCON &= ~0x180000;
@@ -60,6 +63,7 @@ void spi_init() {
 
 }
 
+// This function was taken from labs
 void display_init() {
 	DISPLAY_COMMAND_DATA_PORT &= ~DISPLAY_COMMAND_DATA_MASK;
 	delay(10);
@@ -90,6 +94,7 @@ void display_init() {
 	spi_send_recv(0xAF);
 }
 
+// This function was taken from labs
 void display_string(int line, char *s) {
 	int i;
 	if(line < 0 || line >= 4) 			// Firstly we check that the given argument 'line' is within bounds
@@ -106,6 +111,7 @@ void display_string(int line, char *s) {
 										  through the string entirely and we then can fill the remaining elements with spaces */
 }
 
+// This function was taken from labs although lightley modified
 void display_image(uint8_t *data) { 		// Pointer to an array which contations data for the whole display
 	int i, j;
 	
@@ -125,6 +131,7 @@ void display_image(uint8_t *data) { 		// Pointer to an array which contations da
 	}
 }
 
+// This function was taken from labs although lightley modified
 void flush_display() { // Similar to the previous function but this one flushes the display
     int i, j;
 
@@ -154,6 +161,7 @@ void clear_FrameBuffer(){ 						// Clears the frameBuffer
     }
 }
 
+// This function was taken from labs although modified with invert function
 void display_update(int on, int x) {
 	int i, j, k;
 	int c;

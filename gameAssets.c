@@ -4,6 +4,13 @@
 #include "gameStructs.h"
 #include "displayControl.h"
 
+
+// Function whose purpose is to assign the initial scores of our player structs
+void playerScoreInit(Player *player1, Player *player2){
+	player1 -> score = 0;
+	player2 -> score = 0;
+}
+
 // Function whose purpose is to  copy a block of memory from a address to another address 
 void* memcpy_custom(void *dest, const void *src, size_t n) {
     /* Dest represents a pointer pointing to the destination address

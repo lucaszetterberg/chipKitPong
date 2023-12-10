@@ -1,6 +1,47 @@
 #include "gameAssets.h"
 
 
+// Function whose purpose is to setup game
+void gameInit(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle){
+	init_xorshift_seed();
+	// Initializing ball
+	ball -> xPos = 63;
+	ball -> yPos = -15;
+	ball -> speed = 0.7;
+	// Setting random ball trajectory each time we restart the game
+	ball -> dx = randomInt(-100, 100)/100.0; 
+    ball -> dy = randomInt(-100, 100)/100.0; 
+	if(ball -> dx < 30 && ball -> dx > -30){	// Limiting the velocity to be either 5 or -5
+		if(ball -> dx > 0){
+			ball -> dx = 5.0;
+		}else{
+			ball -> dx = -5.0;
+		}
+	} 
+
+	float magnitude = custom_sqrt(ball -> dx * ball -> dx + ball -> dy * ball -> dy);
+	ball -> dx /= magnitude;	// Normalize the vectors to prevent the ball from gaining or losing velocity so the velocity can be constant
+	ball -> dy /= magnitude;
+	ball -> xPos = (ball -> xPos + ball -> speed * ball -> dx);	 // Updating the ball's coordinates
+    ball -> yPos = (ball -> yPos + ball -> speed * ball -> dy);
+
+	ball -> size = 2;	// Assigning ball size
+	memcpy_custom(ball -> image, Array, sizeof(Array));	// Copy memory block from ball.image to the destination memory block Array
+
+	// Initializing paddles
+	leftPaddle -> xPos = 4;
+    leftPaddle -> yPos = -10;
+    leftPaddle -> width = 1;
+    leftPaddle -> height = 7;
+	memcpy_custom(leftPaddle -> image, Image, sizeof(Image));	// Similar logic applies here 
+
+	rightPaddle -> xPos = 123;
+    rightPaddle -> yPos = -10;
+    rightPaddle -> width = 1;
+    rightPaddle -> height = 7;
+	memcpy_custom(rightPaddle -> image, Image, sizeof(Image));	// Similar logic applies here
+}
+
 void winner(Player *player1, Player *player2){ 
 	if(player1 -> score == 11 || player2 -> score == 11){
 
@@ -24,11 +65,11 @@ void winner(Player *player1, Player *player2){
 		while (!(PORTD >> 11));             //Waits for input from sw4
         
         GAME_STATE = GAME_STATE_MENU;       //Returns to main menu
-		playerScoreInit();
+		playerScoreInit(player1, player2);
 	}
 }
 
-void score_detection(Ball *ball, Player *player1, Player *player2){
+void score_detection(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle, Player *player1, Player *player2){
 	if(ball -> xPos <= 0){
         if(GAME_STATE == GAME_STATE_SURVIVAL){
             flush_display();
@@ -36,7 +77,7 @@ void score_detection(Ball *ball, Player *player1, Player *player2){
             display_string(1, "    GAME OVER");
             display_update(0, x);
             delay(1000000);
-            gameInit();
+            gameInit(ball, leftPaddle, rightPaddle);
             GAME_STATE = GAME_STATE_INSERT_HIGHSCORE;
         }else if(GAME_STATE == GAME_STATE_ONE_PLAYER){
 			display_string(1, "AI scores!");
@@ -49,13 +90,13 @@ void score_detection(Ball *ball, Player *player1, Player *player2){
 		delay(10000000);
 
 		if(GAME_STATE == GAME_STATE_ONE_PLAYER){
-			gameInit();
+			gameInit(ball, leftPaddle, rightPaddle);
 			GAME_STATE = GAME_STATE_ONE_PLAYER;
 		}else if(GAME_STATE == GAME_STATE_TWO_PLAYER){
-			gameInit();
+			gameInit(ball, leftPaddle, rightPaddle);
 			GAME_STATE = GAME_STATE_TWO_PLAYER;
 		}else if(GAME_STATE == GAME_STATE_SURVIVAL){
-            gameInit();
+            gameInit(ball, leftPaddle, rightPaddle);
 			GAME_STATE = GAME_STATE_SURVIVAL;
         }
 	}
@@ -68,13 +109,13 @@ void score_detection(Ball *ball, Player *player1, Player *player2){
 		delay(10000000);
 
 		if(GAME_STATE == GAME_STATE_ONE_PLAYER){
-			gameInit();
+			gameInit(ball, leftPaddle, rightPaddle);
 			GAME_STATE = GAME_STATE_ONE_PLAYER;
 		}else if(GAME_STATE == GAME_STATE_TWO_PLAYER){
-			gameInit();
+			gameInit(ball, leftPaddle, rightPaddle);
 			GAME_STATE = GAME_STATE_TWO_PLAYER;
 		}else if(GAME_STATE == GAME_STATE_SURVIVAL){
-            gameInit();
+            gameInit(ball, leftPaddle, rightPaddle);
 			GAME_STATE = GAME_STATE_SURVIVAL;
         }
 	}
@@ -89,12 +130,12 @@ void ai(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle) {
 		switch (AI_DIFFICULTY)
 		{
 		case AI_EASY:
-			sensitivity = 0.05;
+			sensitivity = 0.08;
 			break;
 		case AI_MEDIUM:
-			sensitivity = 0.1;
+			sensitivity = 0.14;
 		case AI_HARD:
-			sensitivity = 0.15;
+			sensitivity = 0.18;
 		default:
 			break;
 		}
@@ -130,11 +171,12 @@ void game(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle, Player *player1, 
     if(inputsw(sw) == 4){
         flush_display();
         clear_textbuffer();
+		playerScoreInit(player1, player2);
         display_string(1, "Rage quit?");
         display_update(0, x);
         delay(10000000);
 		flush_display();
-		gameInit();
+		gameInit(ball, leftPaddle, rightPaddle);
         GAME_STATE = GAME_STATE_MENU;
     }
 
@@ -199,9 +241,10 @@ void game(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle, Player *player1, 
             }
         }
     }
-    score_detection(ball, player1, player2);
+    score_detection(ball, leftPaddle, rightPaddle, player1, player2);
 }
 
+// Some of the code in this function was taken from labs
 void timersInit(){
 	T3CON = 0x0070;						// Makes bits 6-4 (TCKPS bits) to 1 (111) to scale the internal clock down by 256. See PIC32 family sheet page 56.
 	IFSCLR(0) = 0x1000;					// Turns bit of interrupt flag to 0. It is bit 8 see PIC32 family sheet page 53. 
