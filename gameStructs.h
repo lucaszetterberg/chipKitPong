@@ -10,9 +10,9 @@ typedef struct
     float dx;
     float dy;
     float speed;
-    int image[4][2];  // Declare the array size here
+    int image[4][2];    // Declare the array size here
 
-} Ball;
+} Ball;                 // Initializing our ball struct
 
 
 typedef struct {
@@ -21,10 +21,10 @@ typedef struct {
     int width;
     int height;
     int image[7][2];
-} Paddle;
+} Paddle;               // Initializing our paddle struct
 
 
 typedef struct {
     int score;
-} Player;
+} Player;               // Initializing our player struct
 #endif

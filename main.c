@@ -14,7 +14,6 @@ Player player2;
 void playerScoreInit(){
 	player1.score = 0;
 	player2.score = 0;
-	playerScore = 0x00;
 }
 
 void menuInit(){
@@ -59,8 +58,9 @@ void insertHighscore(Player *player1){
 	for(i = 0; i < 7; i++){
 		textbuffer[1][i] = HighScores[HighScoreIndex][i];
 	}
-
-	textbuffer[1][letterIndex] = intToAscii(letter);
+	if(letterIndex < 3){
+		textbuffer[1][letterIndex] = intToAscii(letter);
+	}
 
 	display_update(0, x);
 }
@@ -104,49 +104,6 @@ void gameInit(){
     rightPaddle.height = 7;
 	memcpy_custom(rightPaddle.image, Image, sizeof(Image));
 }
-
-void ballMovement(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle) {
-
-    float magnitude = custom_sqrt(ball -> dx * ball -> dx + ball -> dy * ball -> dy);
-	ball -> dx /= magnitude;
-	ball -> dy /= magnitude;
-	ball -> xPos = (ball -> xPos + ball -> speed * ball -> dx);
-    ball -> yPos = (ball -> yPos + ball -> speed * ball -> dy);
-
-	
-    float ballLeft = ball -> xPos;
-    float ballRight = ball -> xPos + ball -> size;
-    float ballTop = ball -> yPos;
-    float ballBottom = ball -> yPos - ball -> size;
-
-
-    float leftPaddleRight = (leftPaddle -> xPos) + (leftPaddle -> width);
-    float leftPaddleTop = leftPaddle -> yPos;
-    float leftPaddleBottom = leftPaddleTop - (leftPaddle -> height);
-
-	float rightPaddleLeft = rightPaddle -> xPos;
-    float rightPaddleTop = rightPaddle -> yPos;
-    float rightPaddleBottom = rightPaddleTop - (rightPaddle -> height);
-
-    if ((ballTop >= 0 && ball -> dy > 0) || (ballBottom <= -28 && ball -> dy < 0)) {
-        ball -> dy = -ball -> dy;
-    }
-
-	if (ballRight >= rightPaddleLeft && ballBottom <= rightPaddleTop && ballTop >= rightPaddleBottom && (ball -> dx) > 0 && (ball -> xPos) < ((rightPaddle -> xPos) + (rightPaddle -> width))){
-		reflectBall(ball, rightPaddle);
-		if(GAME_STATE == GAME_STATE_SURVIVAL){
-			score(&player1);
-		}
-		ball -> speed += 0.05;
-    }
-
-    if (ballLeft <= leftPaddleRight && ballBottom <= leftPaddleTop && ballTop >= leftPaddleBottom && (ball -> dx) < 0 && ((ball -> xPos) + (ball -> size)) > (leftPaddle -> xPos)){                 // Checks left paddle
-        reflectBall(ball, leftPaddle);
-		ball -> speed += 0.05;
-    }
-}
-
-int count;
 
 int main(void) {
 	clear_FrameBuffer();

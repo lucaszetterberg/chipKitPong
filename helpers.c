@@ -1,10 +1,13 @@
 #include <stdint.h>
 #include "gameAssets.h"
 
+// Function whose purpose is to return the absolute value of given argument
 float custom_abs(float x) {
     return (x < 0) ? -x : x;
 }
 
+// Function whose purpose is to return the square root of given argument using the Newton - Raphson method
+// Largely inspired by solutions found on stack overflow
 float custom_sqrt(float x) {
     if (x == 0.0 || x == 1.0) {
         return x;

@@ -27,31 +27,49 @@
 uint8_t FrameBuffer[OledDispMax];
 uint8_t EmptyBuffer[OledDispMax];
 
+/** A delay function whose purpose is to make an delay of wanted time in milliseconds in the argument */
 void delay(int cyc);
+
+/** Function whose purpose is to clear our textbuffer, this is done by setting all pixels or in this case all elements
+   in the 2D array to be set to 0 */
 void clear_textbuffer();
+
+/** This takes care of when wanting to receive data to the buffer or sending data from the buffer */
 uint8_t spi_send_recv(uint8_t data);
+
+/** Here we setup the SPI to work as intended, this is where we turn on the SPI for an example. In other words, here is where 
+   the initializations takes place in order to setup the SPI */
 void spi_init();
+
+/** Here is where we intialize the display, this is done throug sending some commands through the SPI interface. For an example
+   this can icnlude commands suchas as for turning on the display.*/
 void display_init();
+
+/** This function is introduced in order to manipulate a specific line in the text buffer and then display it.
+    It fills out with spaces if the string is shorter than 16 characters */
 void display_string(int line, char *s);
+
+/** Renders a 4 page or line image on the display by using the SPI interface */
 void display_image(uint8_t *data);
+
+/** Flushes (clears) the display and also then updates the display */
 void flush_display();
+
+/** Clears the FrameBuffer by setting all elements in the 2D array to zeros (All the pixels), the method for clearing is similiar
+    to the clear_textBuffer function */
 void clear_FrameBuffer();
+
+/** Sends data to the display, and which exact data is depending on what our framebuffer holds. It is also 
+    responsible for updating each pixel on the screen. */
 void display_update(int on, int x);
 
-
+/* This is not to allocate more memory than neccesary since these are made in another file */
 extern char textbuffer[4][16];
 extern const uint8_t const font[128*8];
-extern 
 
-/**
- * Renders one pixel on specified coordinates x and y. 
- * The screen has its origin in the top left corner and 
- * has its x and y axises according to it.
- *
- * Input: int x, int y (pixel coordinates)
- * 
- * Output: None
-*/
+/** Renders one pixel on specified coordinates x and y. 
+   The screen has its origin in the top left corner and 
+   has its x and y axises according to it. */
 void coordToBuffer(int x, int y);
 
 #endif

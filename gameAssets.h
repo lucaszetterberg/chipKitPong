@@ -20,17 +20,17 @@
 #define AI_MEDIUM 2
 #define AI_HARD 3
 
-int GAME_STATE;
-int AI_DIFFICULTY;
-int btns;
-int sw;
-int x;
-int letter;
-int letterIndex;
-char HighScores [8][7];
-int HighScoreIndex;
-int playerScore;
-int HighScoreListIndex;
+int GAME_STATE;     //Used for keeping track of the game state
+int AI_DIFFICULTY;  //Used for keeping track of the difficulity of AI
+int btns;           //Input signal from chipKit buttons
+int sw;             //Input signal from chipKit switches
+int x;              //Used to keep track of "selected" option in menus
+int letter;         //Used to keep track of which letter is selected in insertHighScore menu
+int letterIndex;    //Used to keep track of which letter index is selected in insertHighScore menu (ranges from 0-2)
+char HighScores [8][7]; //2D array used to store highscores
+int HighScoreIndex;     //Variable used to keep track of which index in HighScores[8][7] is going to be modified
+//int playerScore;
+int HighScoreListIndex; //Variable used to keep track of which row selected in Highscore menu
 static uint32_t xorshift_seed;
 
 void game(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle, Player *player1, Player *player2);
@@ -41,11 +41,41 @@ void* memcpy_custom(void *dest, const void *src, size_t n);
 void draw_paddle(Paddle *paddle);
 void score(Player *player);
 void aiMenu();
+/**
+ * Initializes timers 2 and 3
+*/
 void timersInit();
+/**
+ * Used for ball deflection when hitting paddle, ball deflect different amount depending on where
+ * it hits the paddle
+ * 
+ * Input: adress for ball, paddle (left or right)
+*/
 void reflectBall(Ball *ball, Paddle  *paddle);
+/**
+ * 
+*/
 void ai(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle);
+/**
+ * Detects when the ball hits either the right or left side and gives the according 
+ * player a point and initializes the game
+ * 
+ * Input: adress for ball, player1, player2
+*/
 void score_detection(Ball *ball, Player *player1, Player *player2);
+/**
+ * Detects when one player has a score of 11 and declares that player as the winner and ends the game
+ * 
+ * Input: address for player1 and player2
+*/
 void winner(Player *player1, Player *player2);
+/**
+ * Used for implementing various ball physics inclding all bouncing. For convenience the function also gives the 
+ * player score in the survival mode since the score in that mode is also dependent on the ball hitting the opponents paddle
+ * 
+ * Input: address for ball, leftPaddle, rightPaddle, player1  
+*/
+void ballMovement(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle, Player *player1);
 
 
 
