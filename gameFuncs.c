@@ -1,56 +1,53 @@
 #include "gameAssets.h"
-void winner(Player *player1, Player *player2){
+
+
+void winner(Player *player1, Player *player2){ 
 	if(player1 -> score == 11 || player2 -> score == 11){
 
 		display_string(1, "Player   wins!");
-        display_string(2, "Results xx:xx");
-        textbuffer[2][8] = (player1->score / 10) + 48;
-	    textbuffer[2][9] = (player1->score % 10) + 48;
-        textbuffer[2][11] = (player2->score / 10) + 48;
-	    textbuffer[2][12] = (player2->score % 10) + 48;
+        display_string(2, "Results xx:xx");             
+        textbuffer[2][8] = (player1->score / 10) + 48;      //Adds first digit of player1 score to textbuffer
+        textbuffer[2][9] = (player1->score % 10) + 48;      //Adds second digit of player1 score to textbuffer
+        textbuffer[2][11] = (player2->score / 10) + 48;     //Adds first digit of player2 score to textbuffer
+	    textbuffer[2][12] = (player2->score % 10) + 48;     //Adds second digit of player2 score to textbuffer
 		display_string(3, "sw4 to main menu");
 
 		if(player1 -> score == 11){
-			textbuffer[1][7] = 0x31;
+			textbuffer[1][7] = 0x31;        //If player 1 won display 1 in empty space in string on line 7
 
-		}else if(player2 -> score == 11){
+		}else if(player2 -> score == 11){   //If player 2 won display 2 in empty space in string on line 7
 			textbuffer[1][7] = 0x32;
 		}
 		
 		display_update(0, x);
-		while (!(PORTD >> 11));
 
-		if(GAME_STATE == GAME_STATE_ONE_PLAYER){
-			insertHighscore(player1);  
-		}else{
-			GAME_STATE = GAME_STATE_MENU;
-		}
+		while (!(PORTD >> 11));             //Waits for input from sw4
+        
+        GAME_STATE = GAME_STATE_MENU;       //Returns to main menu
 		playerScoreInit();
 	}
 }
-// Function whose purpose is to detect if a player has scored and which one of them
+
 void score_detection(Ball *ball, Player *player1, Player *player2){
-	if(ball -> xPos <= 0){      // If the ball manages to get past the paddle
-        // Handles when this happens in gameState survival
+	if(ball -> xPos <= 0){
         if(GAME_STATE == GAME_STATE_SURVIVAL){
             flush_display();
             clear_textbuffer();
-            display_string(1, "    GAME OVER");     // Game over when ball manages to hit left side
+            display_string(1, "    GAME OVER");
             display_update(0, x);
             delay(1000000);
             gameInit();
             GAME_STATE = GAME_STATE_INSERT_HIGHSCORE;
-            // Handles when this happens in gameState one player
-        }else if(GAME_STATE == GAME_STATE_ONE_PLAYER){  
+        }else if(GAME_STATE == GAME_STATE_ONE_PLAYER){
 			display_string(1, "AI scores!");
 		}else{
 			display_string(1, "Player 2 scores!");
 		}
 		display_update(0, x);
-		score(player2);     // Increment player2 score
+		score(player2);
 
 		delay(10000000);
-        // Setting up for new round
+
 		if(GAME_STATE == GAME_STATE_ONE_PLAYER){
 			gameInit();
 			GAME_STATE = GAME_STATE_ONE_PLAYER;
@@ -62,7 +59,7 @@ void score_detection(Ball *ball, Player *player1, Player *player2){
 			GAME_STATE = GAME_STATE_SURVIVAL;
         }
 	}
-    // Similar logic applies here
+
 	if(ball -> xPos >= 126){
 		display_string(1, "Player 1 scores!");
 		display_update(0, x);
@@ -82,7 +79,7 @@ void score_detection(Ball *ball, Player *player1, Player *player2){
         }
 	}
 }
-// Function whose purpose is to manage our Ai
+
 void ai(Ball *ball, Paddle *leftPaddle, Paddle *rightPaddle) {
 	if(ball -> xPos >= 63){
 		// Adjust this value to control the AI's responsiveness
