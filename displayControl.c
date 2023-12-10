@@ -191,8 +191,7 @@ void coordToBuffer(int x, int y) {
     short offset = 0;
 	uint8_t positiveY = -(y);
 
-    if (positiveY > 0) { 
-		offset = positiveY / 8; 
-		}
+	offset = positiveY / 8; 
+
 	FrameBuffer[offset * 128 + x] |= 1 << (positiveY - offset * 8);
 }

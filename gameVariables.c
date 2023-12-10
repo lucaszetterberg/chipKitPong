@@ -1,5 +1,4 @@
-
-
+// Introducing game variables
 int GAME_STATE;
 int AI_DIFFICULTY;
 int btns;

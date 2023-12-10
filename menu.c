@@ -1,28 +1,28 @@
 #include "gameAssets.h"
 
-
+// Function for mainMenu
 void mainMenu(){
 	clear_textbuffer();
 	display_string(0, "Survival Mode");
 	display_string(1, "Single player");
 	display_string(2, "Two Player");
 	display_string(3, "Highscore");
-	display_update(1, x);
+	display_update(1, x);		// Has one as input in order to invert the current selected page selected by x
 
-	int mode = input(btns);
+	int mode = input(btns);	
 	int sw4 = inputsw(sw);
 
 	switch (mode)
 	{
 	case 4:
-		x += 1;
+		x += 1;		// Traverse in menu when button 4 is pressed
 		delay(900000);
 		break;
-	case 3:
+	case 3:		// When button 3 is pressed you select the current page that you are selecting in X
 		switch (x)
 		{
 		//*
-		case 0:
+		case 0:		// When you are in first page and press button 3 the survival mode will start
 			clear_textbuffer();
 			display_string(1, "Game starts!");
 			display_update(0, x);
@@ -35,7 +35,7 @@ void mainMenu(){
 			GAME_STATE = GAME_STATE_SURVIVAL;
 			break;
 		//*/
-		case 1:
+		case 1:			// Similar logic applies here
 			clear_textbuffer();
 			btns = 0;
 			sw = 0;
@@ -65,12 +65,12 @@ void mainMenu(){
 	}
 	
 }
-
+// Function for highScore menu
 void highscoreMenu(){
 	clear_textbuffer();
 	clear_FrameBuffer();
 
-	
+	// Displays content for highScores that have been saved
 	int i;
 	for(i = 0; i < 7; i++){
 		textbuffer[0][i] = HighScores[HighScoreListIndex][i];
@@ -78,7 +78,7 @@ void highscoreMenu(){
 		textbuffer[2][i] = HighScores[HighScoreListIndex + 2][i];
 		textbuffer[3][i] = HighScores[HighScoreListIndex + 3][i];
 	}
-
+	// 
 	if(input(btns) == 4){
 		if(x < 3){
 			x++;
